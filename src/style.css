@@ -393,9 +393,9 @@ a:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
-.google-logo {
-  width: 20px;
-  height: 20px;
+.google-icon-fa {
+  font-size: 1.15rem;
+  color: #4285f4;
 }
 
 .auth-footer p {
@@ -503,7 +503,8 @@ a:hover {
   gap: 8px;
   z-index: 100;
 }
-.user-profile-menu:hover .profile-dropdown {
+.user-profile-menu:hover .profile-dropdown,
+.user-profile-menu.active .profile-dropdown {
   display: flex;
 }
 .user-name {
@@ -1555,3 +1556,172 @@ a:hover {
 .toast-close:hover {
   color: var(--color-text-main);
 }
+
+/* ==========================================================================
+   AJUSTES RESPONSIVOS PARA MÓVILES (Max-Width: 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Contenedor de contenido padding menor */
+  .content-viewport {
+    padding: 12px 10px;
+  }
+
+  /* Tarjetas menos acolchadas */
+  .card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  /* Header más compacto */
+  .main-header {
+    padding: 10px 12px;
+  }
+  .header-brand h2 {
+    font-size: 1.1rem;
+  }
+  .header-brand i {
+    font-size: 1.1rem;
+  }
+
+  /* Badge de estado en la nube compacto */
+  #cloud-status-badge {
+    font-size: 0.72rem;
+    padding: 4px 6px;
+    white-space: nowrap;
+  }
+
+  /* Dashboard: Gráfico de progreso circular más chico */
+  .progress-circle-container {
+    width: 140px;
+    height: 140px;
+  }
+  .calories-count {
+    font-size: 1.5rem;
+  }
+  .calories-total {
+    font-size: 0.95rem;
+  }
+
+  /* Dashboard: limitar la altura del historial */
+  .meals-list-container {
+    max-height: 280px;
+  }
+
+  /* Tarjeta de Comida en Historial: evitar aplastamiento */
+  .meal-log-card {
+    padding: 10px 10px;
+    gap: 10px;
+  }
+  .meal-log-img {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+  .meal-log-details {
+    flex: 1;
+    min-width: 0; /* Permite que el truncamiento de texto funcione */
+  }
+  .meal-log-right {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  .meal-log-title {
+    font-size: 0.9rem;
+  }
+  .meal-log-calories {
+    font-size: 1rem;
+  }
+  .meal-log-macros {
+    gap: 4px;
+    font-size: 0.7rem;
+  }
+  .meal-log-macros span {
+    padding: 1px 4px;
+  }
+
+  /* Controles de la cámara / Escáner compactos */
+  .scanner-controls {
+    padding: 10px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+  .scanner-controls .flex-btn span {
+    display: none; /* Ocultar texto en móviles */
+  }
+  .scanner-controls .flex-btn {
+    padding: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    flex: none;
+  }
+  .btn-shutter {
+    width: 58px;
+    height: 58px;
+    box-shadow: 0 0 0 3px white, 0 6px 15px rgba(0,0,0,0.3);
+  }
+  .shutter-inner {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Modal de Resultados */
+  .modal-overlay {
+    padding: 8px;
+  }
+  
+  .modal-card {
+    max-height: calc(100dvh - 16px);
+    border-radius: 16px;
+  }
+
+  .modal-body {
+    padding: 14px;
+  }
+
+  .result-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Limitar el tamaño de la imagen en el modal en móviles */
+  .result-image-wrapper {
+    height: 140px;
+    aspect-ratio: auto;
+    margin-bottom: 8px;
+  }
+
+  /* Grid de macros en el modal: 2 columnas */
+  .result-macros-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* Tabla de ingredientes compacta */
+  .ingredients-table {
+    font-size: 0.8rem;
+  }
+  .ingredients-table th, .ingredients-table td {
+    padding: 6px 4px;
+  }
+
+  /* Botones del modal menos gigantes */
+  .modal-footer {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .modal-footer .btn {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+
+  /* Tarjeta de autorización / login */
+  .auth-card {
+    padding: 24px 16px;
+    border-radius: 16px;
+  }
+}
+

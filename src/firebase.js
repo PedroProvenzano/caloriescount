@@ -30,6 +30,8 @@ if (isFirebaseConfigured) {
     auth = getAuth(app);
     db = getFirestore(app);
     googleProvider = new GoogleAuthProvider();
+    // Forzar la selección de cuenta cada vez que se loguea
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
     // Forzar el idioma en español para Google Auth
     auth.useDeviceLanguage();
   } catch (error) {

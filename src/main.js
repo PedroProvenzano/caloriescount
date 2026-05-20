@@ -3,7 +3,9 @@ import { auth, db, googleProvider, isFirebaseConfigured } from './firebase.js';
 import { 
   signInWithPopup, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  signInWithRedirect,
+  getRedirectResult
 } from 'firebase/auth';
 import { 
   collection, 
@@ -123,6 +125,7 @@ const DOM = {
   btnBypassLogin: document.getElementById('btn-bypass-login'),
   cloudStatusBadge: document.getElementById('cloud-status-badge'),
   userAvatar: document.getElementById('user-avatar'),
+  userProfileMenu: document.querySelector('.user-profile-menu'),
   userName: document.getElementById('user-name'),
   userEmail: document.getElementById('user-email'),
   btnLogout: document.getElementById('btn-logout'),
@@ -263,12 +266,46 @@ function setupNavigation() {
       }
     });
   });
+
+  // Toggle menú de perfil al hacer click en el avatar (para móviles sin hover)
+  if (DOM.userAvatar && DOM.userProfileMenu) {
+    DOM.userAvatar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      DOM.userProfileMenu.classList.toggle('active');
+    });
+
+    // Cerrar el menú si se hace click fuera de él
+    document.addEventListener('click', () => {
+      DOM.userProfileMenu.classList.remove('active');
+    });
+  }
+}
+
+// Control de versión para forzar la actualización del caché en el móvil
+async function checkAppVersion() {
+  try {
+    const response = await fetch('./version.json?t=' + Date.now(), { cache: 'no-store' });
+    if (response.ok) {
+      const data = await response.json();
+      const currentVersion = localStorage.getItem('ns_app_version');
+      if (currentVersion && currentVersion !== String(data.version)) {
+        localStorage.setItem('ns_app_version', String(data.version));
+        // Forzar recarga completa ignorando caché
+        window.location.reload(true);
+      } else if (!currentVersion) {
+        localStorage.setItem('ns_app_version', String(data.version));
+      }
+    }
+  } catch (err) {
+    console.warn("No se pudo verificar la versión de la app:", err);
+  }
 }
 
 // ==========================================================================
 // INICIALIZACIÓN DE LA APLICACIÓN & FLUJO DE AUTENTICACIÓN
 // ==========================================================================
-function initApp() {
+async function initApp() {
+  await checkAppVersion();
   setupNavigation();
   setupCameraControls();
   setupSettingsControls();
@@ -289,6 +326,18 @@ function initApp() {
   if (isFirebaseConfigured) {
     DOM.btnGoogleLogin.addEventListener('click', handleGoogleLogin);
     DOM.btnLogout.addEventListener('click', handleLogout);
+
+    // Capturar el resultado del redireccionamiento si viene de un login en móvil
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          showToast("Sesión iniciada correctamente", "success");
+        }
+      })
+      .catch((error) => {
+        console.error("Error en resultado de redirección:", error);
+        showToast("Error al iniciar sesión: " + error.message, "error");
+      });
 
     // Listener de estado de Firebase Auth
     onAuthStateChanged(auth, (user) => {
@@ -368,8 +417,18 @@ function setupCloudMode(user) {
 async function handleGoogleLogin() {
   try {
     DOM.btnGoogleLogin.disabled = true;
-    await signInWithPopup(auth, googleProvider);
-    showToast("Sesión iniciada correctamente", "success");
+    
+    // Detectar si es un navegador móvil o pantalla chica
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+    
+    if (isMobile) {
+      // En móviles los popup se bloquean. Usamos la redirección nativa de Firebase
+      await signInWithRedirect(auth, googleProvider);
+    } else {
+      // En ordenadores usamos la clásica ventana emergente
+      await signInWithPopup(auth, googleProvider);
+      showToast("Sesión iniciada correctamente", "success");
+    }
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
     showToast("Error al iniciar sesión con Google: " + error.message, "error");
@@ -419,7 +478,7 @@ function listenUserSettings() {
 function listenTodayMeals() {
   const todayStr = new Date().toLocaleDateString('sv'); // Formato YYYY-MM-DD
   const mealsCol = collection(db, "users", state.user.uid, "meals");
-  const q = query(mealsCol, where("dateString", "==", todayStr), orderBy("timestamp", "asc"));
+  const q = query(mealsCol, where("dateString", "==", todayStr));
 
   unsubscribeMeals = onSnapshot(q, (querySnapshot) => {
     state.todayMeals = [];
@@ -429,6 +488,14 @@ function listenTodayMeals() {
         ...docSnap.data()
       });
     });
+    
+    // Ordenar las comidas localmente por fecha/hora para no requerir índice compuesto en Firestore
+    state.todayMeals.sort((a, b) => {
+      const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return timeA - timeB;
+    });
+
     updateDashboard();
   }, (err) => {
     console.error("Error al escuchar comidas del día:", err);
