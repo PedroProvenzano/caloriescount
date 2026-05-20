@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NutriScan AI - Contador de Calorías Inteligente</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Pantalla de Carga Inicial -->
+      <div id="app-loading" class="fullscreen-overlay">
+        <div class="spinner-container">
+          <div class="double-bounce1"></div>
+          <div class="double-bounce2"></div>
+        </div>
+        <p>Iniciando NutriScan AI...</p>
+      </div>
+
+      <!-- Pantalla de Login (Firebase Auth) -->
+      <div id="login-screen" class="fullscreen-overlay hidden">
+        <div class="auth-card">
+          <div class="auth-header">
+            <div class="logo-badge">
+              <i class="fa-solid fa-shrimp logo-icon"></i>
+            </div>
+            <h1>NutriScan <span class="accent-text">AI</span></h1>
+            <p>Toma una foto de tu plato y conoce su información nutricional al instante gracias a Inteligencia Artificial.</p>
+          </div>
+          
+          <div class="auth-body">
+            <button id="btn-google-login" class="btn btn-google">
+              <img src="https://lh3.googleusercontent.com/COxitqgJr1sIC564be50BwJHnK1a7V1621eRj7OBLJXe-hxBt2A2wVMSOgo0hw9gJXg" alt="Google Logo" class="google-logo" />
+              <span>Iniciar sesión con Google</span>
+            </button>
+            
+            <button id="btn-bypass-login" class="btn btn-secondary">
+              <i class="fa-solid fa-eye-slash"></i>
+              <span>Probar sin iniciar sesión (Modo Local)</span>
+            </button>
+          </div>
+          
+          <div class="auth-footer">
+            <p>Guarda tus comidas en la nube y sincroniza tus dispositivos</p>
+          </div>
+        </div>
+        <!-- Blobs decorativos de fondo -->
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+      </div>
+
+      <!-- Contenedor Principal de la Aplicación -->
+      <div id="main-layout" class="app-layout hidden">
+        <!-- Encabezado / Header -->
+        <header class="main-header">
+          <div class="header-brand">
+            <i class="fa-solid fa-shrimp brand-icon"></i>
+            <h2>NutriScan <span class="accent-text">AI</span></h2>
+          </div>
+          
+          <div class="header-actions">
+            <!-- Indicador de estado (Local vs Cloud) -->
+            <span id="cloud-status-badge" class="badge">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Nube Activa
+            </span>
+            
+            <div class="user-profile-menu">
+              <img id="user-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" alt="Avatar" class="avatar" />
+              <div class="profile-dropdown">
+                <p id="user-name" class="user-name">Usuario de NutriScan</p>
+                <p id="user-email" class="user-email">usuario@correo.com</p>
+                <div class="dropdown-divider"></div>
+                <button id="btn-logout" class="dropdown-item text-danger">
+                  <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Contenido de las Pestañas -->
+        <main class="content-viewport">
+          
+          <!-- PESTAÑA 1: DASHBOARD / DIARIO -->
+          <section id="sec-dashboard" class="tab-panel active">
+            <div class="dashboard-grid">
+              
+              <!-- Tarjeta de Progreso Diario (Calorías) -->
+              <div class="card card-progress">
+                <h3>Calorías Diarias</h3>
+                <div class="progress-circle-container">
+                  <svg class="progress-circle-svg" viewBox="0 0 100 100">
+                    <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+                    <circle id="circle-progress" class="circle-bar" cx="50" cy="50" r="45" stroke-dasharray="283" stroke-dashoffset="283"></circle>
+                  </svg>
+                  <div class="progress-circle-text">
+                    <span id="calories-consumed" class="calories-count">0</span>
+                    <span class="calories-divider">de</span>
+                    <span id="calories-goal-text" class="calories-total">2000</span>
+                    <span class="calories-unit">kcal</span>
+                  </div>
+                </div>
+                <div class="progress-subtext">
+                  <span id="calories-remaining-txt">Te quedan 2000 kcal para hoy</span>
+                </div>
+              </div>
+
+              <!-- Tarjeta de Macronutrientes -->
+              <div class="card card-macros">
+                <h3>Macronutrientes</h3>
+                <div class="macros-list">
+                  <!-- Carbohidratos -->
+                  <div class="macro-item">
+                    <div class="macro-info">
+                      <span class="macro-label"><i class="fa-solid fa-wheat-awn text-carbs"></i> Carbohidratos</span>
+                      <span class="macro-values"><strong id="val-carbs">0g</strong> <span class="macro-target">/ 250g</span></span>
+                    </div>
+                    <div class="macro-bar-container">
+                      <div id="bar-carbs" class="macro-bar bar-carbs" style="width: 0%"></div>
+                    </div>
+                  </div>
+                  <!-- Proteínas -->
+                  <div class="macro-item">
+                    <div class="macro-info">
+                      <span class="macro-label"><i class="fa-solid fa-egg text-protein"></i> Proteínas</span>
+                      <span class="macro-values"><strong id="val-protein">0g</strong> <span class="macro-target">/ 120g</span></span>
+                    </div>
+                    <div class="macro-bar-container">
+                      <div id="bar-protein" class="macro-bar bar-protein" style="width: 0%"></div>
+                    </div>
+                  </div>
+                  <!-- Grasas -->
+                  <div class="macro-item">
+                    <div class="macro-info">
+                      <span class="macro-label"><i class="fa-solid fa-droplet text-fat"></i> Grasas</span>
+                      <span class="macro-values"><strong id="val-fat">0g</strong> <span class="macro-target">/ 65g</span></span>
+                    </div>
+                    <div class="macro-bar-container">
+                      <div id="bar-fat" class="macro-bar bar-fat" style="width: 0%"></div>
+                    </div>
+                  </div>
+                  <!-- Fibra -->
+                  <div class="macro-item">
+                    <div class="macro-info">
+                      <span class="macro-label"><i class="fa-solid fa-leaf text-fiber"></i> Fibra</span>
+                      <span class="macro-values"><strong id="val-fiber">0g</strong> <span class="macro-target">/ 30g</span></span>
+                    </div>
+                    <div class="macro-bar-container">
+                      <div id="bar-fiber" class="macro-bar bar-fiber" style="width: 0%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Listado de Historial del Día -->
+              <div class="card card-history">
+                <div class="history-header">
+                  <h3>Registro de Hoy</h3>
+                  <button id="btn-clear-history" class="btn btn-text text-danger" title="Borrar registro de hoy">
+                    <i class="fa-solid fa-trash-can"></i> Limpiar
+                  </button>
+                </div>
+                <div id="meals-list" class="meals-list-container">
+                  <div class="empty-state">
+                    <i class="fa-solid fa-utensils empty-icon"></i>
+                    <p>No has registrado comidas hoy.</p>
+                    <p class="subtext">Ve a la pestaña de Escanear para añadir tu primer plato.</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- PESTAÑA 2: ESCANEAR / CÁMARA -->
+          <section id="sec-scan" class="tab-panel">
+            <div class="scanner-container">
+              <!-- Visor de la cámara o previsualización de imagen -->
+              <div class="viewfinder-card">
+                <div class="viewfinder-window">
+                  <video id="webcam-video" autoplay playsinline class="hidden"></video>
+                  <img id="image-preview" class="hidden" alt="Comida capturada" />
+                  <canvas id="capture-canvas" class="hidden"></canvas>
+                  
+                  <div id="viewfinder-placeholder" class="viewfinder-placeholder">
+                    <i class="fa-solid fa-camera-retro scan-icon-large"></i>
+                    <p>Habilita la cámara o sube un archivo para analizar tu plato</p>
+                  </div>
+
+                  <!-- Overlay de escaneo con láser de animación -->
+                  <div id="scan-laser" class="scan-laser hidden"></div>
+                </div>
+
+                <!-- Indicador de origen de la foto -->
+                <div class="viewfinder-footer">
+                  <span id="camera-status" class="status-label">Cámara inactiva</span>
+                </div>
+              </div>
+
+              <!-- Controles de Captura -->
+              <div class="scanner-controls">
+                <button id="btn-toggle-camera" class="btn btn-secondary flex-btn">
+                  <i class="fa-solid fa-video"></i>
+                  <span>Activar Cámara</span>
+                </button>
+                
+                <button id="btn-switch-camera" class="btn btn-icon btn-secondary hidden" title="Cambiar Cámara">
+                  <i class="fa-solid fa-camera-rotate"></i>
+                </button>
+
+                <!-- Botón de Obturador Principal -->
+                <button id="btn-capture" class="btn-shutter" disabled title="Tomar Foto">
+                  <div class="shutter-inner"></div>
+                </button>
+
+                <button id="btn-upload-file" class="btn btn-secondary flex-btn">
+                  <i class="fa-solid fa-file-image"></i>
+                  <span>Subir Foto</span>
+                </button>
+                <input type="file" id="file-input" accept="image/*" class="hidden" />
+              </div>
+            </div>
+          </section>
+
+          <!-- PESTAÑA 3: AJUSTES / CONFIGURACIÓN -->
+          <section id="sec-settings" class="tab-panel">
+            <div class="settings-container">
+              <div class="card card-settings">
+                <h3><i class="fa-solid fa-sliders"></i> Ajustes de Perfil</h3>
+                <div class="form-group">
+                  <label for="input-daily-calories">Meta Diaria de Calorías (kcal)</label>
+                  <input type="number" id="input-daily-calories" min="1000" max="10000" value="2000" class="form-control" />
+                </div>
+                <button id="btn-save-settings" class="btn btn-primary">
+                  <i class="fa-solid fa-floppy-disk"></i> Guardar Ajustes
+                </button>
+              </div>
+
+              <div class="card card-settings">
+                <h3><i class="fa-solid fa-key"></i> Clave API de Google Gemini</h3>
+                <p class="settings-help">
+                  Esta aplicación utiliza la API de Gemini para el reconocimiento de alimentos. Puedes obtener una clave gratuita en 
+                  <a href="https://aistudio.google.com/" target="_blank" class="link-external">Google AI Studio <i class="fa-solid fa-arrow-up-right-from-square"></i></a>.
+                </p>
+                <div class="form-group">
+                  <label for="input-gemini-key">API Key de Gemini</label>
+                  <div class="password-input-wrapper">
+                    <input type="password" id="input-gemini-key" placeholder="Pega tu clave AIzaSy... aquí" class="form-control" />
+                    <button id="btn-toggle-key-visibility" class="btn btn-icon btn-text" title="Mostrar/Ocultar Clave">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <div id="gemini-status-box" class="api-status-box info">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <span id="gemini-status-text">Sin clave configurada. La app funciona en **Modo Demo** con datos simulados.</span>
+                </div>
+
+                <div class="settings-actions">
+                  <button id="btn-save-gemini-key" class="btn btn-primary">
+                    <i class="fa-solid fa-key"></i> Guardar API Key
+                  </button>
+                  <button id="btn-clear-gemini-key" class="btn btn-secondary text-danger">
+                    <i class="fa-solid fa-eraser"></i> Eliminar
+                  </button>
+                </div>
+              </div>
+
+              <div class="card card-settings">
+                <h3><i class="fa-solid fa-circle-question"></i> Acerca de NutriScan AI</h3>
+                <div class="about-info">
+                  <p><strong>Desarrollado para:</strong> Control de calorías y macronutrientes diario.</p>
+                  <p><strong>Hosting:</strong> Listo para GitHub Pages (procesamiento 100% en cliente).</p>
+                  <p><strong>Privacidad:</strong> Las imágenes se procesan directamente contra la API de Google Gemini y no se almacenan en ningún servidor intermediario. Los registros se sincronizan en tu base de datos de Firebase.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </main>
+
+        <!-- Barra de Navegación Inferior (Sticky Bottom Navigation) -->
+        <nav class="bottom-nav">
+          <button id="nav-dashboard" class="nav-item active">
+            <i class="fa-solid fa-chart-pie nav-icon"></i>
+            <span class="nav-label">Diario</span>
+          </button>
+          <button id="nav-scan" class="nav-item">
+            <i class="fa-solid fa-camera-retro nav-icon"></i>
+            <span class="nav-label">Escanear</span>
+          </button>
+          <button id="nav-settings" class="nav-item">
+            <i class="fa-solid fa-gear nav-icon"></i>
+            <span class="nav-label">Ajustes</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- MODAL DE RESULTADOS DE ANÁLISIS -->
+      <div id="result-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Análisis de Plato</h2>
+            <button id="btn-close-modal" class="btn-close">&times;</button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="result-layout">
+              <!-- Lado izquierdo: Imagen y calorías -->
+              <div class="result-visual">
+                <div class="result-image-wrapper">
+                  <img id="result-img" src="" alt="Comida analizada" />
+                  <div class="result-calories-badge">
+                    <span id="result-calories">0</span>
+                    <span class="unit">kcal</span>
+                  </div>
+                </div>
+                <h3 id="result-meal-name" class="result-meal-title">Plato de comida</h3>
+                <div class="result-confidence">
+                  Confianza de estimación: <span id="result-confidence-val" class="badge-confidence">Media</span>
+                </div>
+              </div>
+
+              <!-- Lado derecho: Desglose nutricional -->
+              <div class="result-details">
+                <!-- Macros detallados -->
+                <div class="result-macros-grid">
+                  <div class="result-macro-pill border-carbs">
+                    <span class="name">Carbs</span>
+                    <strong id="result-carbs">0g</strong>
+                  </div>
+                  <div class="result-macro-pill border-protein">
+                    <span class="name">Proteínas</span>
+                    <strong id="result-protein">0g</strong>
+                  </div>
+                  <div class="result-macro-pill border-fat">
+                    <span class="name">Grasas</span>
+                    <strong id="result-fat">0g</strong>
+                  </div>
+                  <div class="result-macro-pill border-fiber">
+                    <span class="name">Fibra</span>
+                    <strong id="result-fiber">0g</strong>
+                  </div>
+                </div>
+
+                <!-- Tabla de ingredientes estimados -->
+                <div class="ingredients-section">
+                  <h4><i class="fa-solid fa-list-check"></i> Ingredientes detectados</h4>
+                  <div class="table-container">
+                    <table class="ingredients-table">
+                      <thead>
+                        <tr>
+                          <th>Ingrediente</th>
+                          <th>Porción/Cantidad</th>
+                          <th class="text-right">Calorías</th>
+                        </tr>
+                      </thead>
+                      <tbody id="result-ingredients-body">
+                        <!-- Carga dinámica -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Consejo de Salud -->
+                <div class="advice-card">
+                  <div class="advice-title">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                    <span>Consejo Nutricional AI</span>
+                  </div>
+                  <p id="result-advice">Un consejo sobre este plato aparecerá aquí.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button id="btn-discard-meal" class="btn btn-secondary">
+              <i class="fa-solid fa-trash"></i> Descartar
+            </button>
+            <button id="btn-save-meal" class="btn btn-primary">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Guardar en Diario
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spinner global para procesos largos (Analizando) -->
+      <div id="global-loader" class="fullscreen-overlay hidden">
+        <div class="loader-content">
+          <div class="scanner-line-animation"></div>
+          <div class="cooking-icon-animation">
+            <i class="fa-solid fa-utensils"></i>
+          </div>
+          <h3>Analizando ingredientes...</h3>
+          <p>La IA de Gemini está estimando las porciones y calorías de tu plato.</p>
+        </div>
+      </div>
+
+      <!-- Contenedor de Toasts de Notificación -->
+      <div id="toast-container" class="toast-container"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
