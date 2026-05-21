@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script type="module" crossorigin src="./assets/index-CPLW-eIC.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DqlF0Hcg.css">
+    <script type="module" crossorigin src="./assets/index-v5KItD6Z.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B1rO2IV1.css">
   </head>
   <body>
     <div id="app">
@@ -247,7 +247,57 @@
             </div>
           </section>
 
-          <!-- PESTAÑA 3: AJUSTES / CONFIGURACIÓN -->
+          <!-- PESTAÑA 3: AMIGOS -->
+          <section id="sec-friends" class="tab-panel">
+            <div class="friends-container">
+
+              <!-- Mi código de amigo -->
+              <div class="card card-friend-code">
+                <h3><i class="fa-solid fa-id-card"></i> Mi Código de Amigo</h3>
+                <div class="friend-code-display">
+                  <span id="my-friend-code" class="friend-code-value">------</span>
+                  <button id="btn-copy-friend-code" class="btn btn-secondary btn-icon" title="Copiar código">
+                    <i class="fa-solid fa-copy"></i>
+                  </button>
+                </div>
+                <p class="settings-help">Compartí este código con tus amigos para conectarse.</p>
+              </div>
+
+              <!-- Agregar amigo -->
+              <div class="card card-settings">
+                <h3><i class="fa-solid fa-user-plus"></i> Agregar Amigo</h3>
+                <div class="add-friend-row">
+                  <input
+                    type="text"
+                    id="input-add-friend-code"
+                    class="form-control"
+                    placeholder="Ingresá el código (Ej: NTR3K8)"
+                    maxlength="6"
+                    autocomplete="off"
+                    style="text-transform: uppercase"
+                  />
+                  <button id="btn-add-friend" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Agregar
+                  </button>
+                </div>
+              </div>
+
+              <!-- Lista de amigos -->
+              <div class="card">
+                <h3><i class="fa-solid fa-users"></i> Amigos Hoy</h3>
+                <div id="friends-list">
+                  <div class="empty-state">
+                    <i class="fa-solid fa-user-group empty-icon"></i>
+                    <p>Todavía no tenés amigos agregados.</p>
+                    <p class="subtext">Compartí tu código para conectarte.</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- PESTAÑA 4: AJUSTES / CONFIGURACIÓN -->
           <section id="sec-settings" class="tab-panel">
             <div class="settings-container">
               <div class="card card-settings">
@@ -293,6 +343,20 @@
               </div>
 
               <div class="card card-settings">
+                <h3><i class="fa-solid fa-share-nodes"></i> Privacidad con Amigos</h3>
+                <div class="setting-toggle-row">
+                  <div>
+                    <p class="toggle-label">Compartir fotos de mis platos</p>
+                    <p class="settings-help" style="margin: 0">Por defecto solo se comparten el nombre y las calorías de cada plato.</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="toggle-share-photos" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="card card-settings">
                 <h3><i class="fa-solid fa-circle-question"></i> Acerca de NutriScan AI</h3>
                 <div class="about-info">
                   <p><strong>Desarrollado para:</strong> Control de calorías y macronutrientes diario.</p>
@@ -314,6 +378,10 @@
           <button id="nav-scan" class="nav-item">
             <i class="fa-solid fa-camera-retro nav-icon"></i>
             <span class="nav-label">Escanear</span>
+          </button>
+          <button id="nav-friends" class="nav-item">
+            <i class="fa-solid fa-user-group nav-icon"></i>
+            <span class="nav-label">Amigos</span>
           </button>
           <button id="nav-settings" class="nav-item">
             <i class="fa-solid fa-gear nav-icon"></i>
