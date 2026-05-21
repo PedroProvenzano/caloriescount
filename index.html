@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script type="module" crossorigin src="./assets/index-CNNZ3ckb.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Dlv2JwLv.css">
+    <script type="module" crossorigin src="./assets/index-DKzuziIp.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Bu5U-MQr.css">
   </head>
   <body>
     <div id="app">
@@ -76,6 +76,7 @@
               <img id="user-avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" alt="Avatar" class="avatar" />
               <div class="profile-dropdown">
                 <p id="user-name" class="user-name">Usuario de NutriScan</p>
+                <p id="user-title" class="user-title"></p>
                 <p id="user-email" class="user-email">usuario@correo.com</p>
                 <div class="dropdown-divider"></div>
                 <button id="btn-logout" class="dropdown-item text-danger">
@@ -95,7 +96,12 @@
               
               <!-- Tarjeta de Progreso Diario (Calorías) -->
               <div class="card card-progress">
-                <h3>Calorías Diarias</h3>
+                <div class="card-header-row">
+                  <h3>Calorías Diarias</h3>
+                  <div id="streak-badge" class="streak-badge" title="Días consecutivos con registro">
+                    <i class="fa-solid fa-fire"></i> <span id="streak-count">0</span> días
+                  </div>
+                </div>
                 <div class="progress-circle-container">
                   <svg class="progress-circle-svg" viewBox="0 0 100 100">
                     <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
@@ -163,7 +169,12 @@
               <!-- Listado de Historial del Día -->
               <div class="card card-history">
                 <div class="history-header">
-                  <h3>Registro de Hoy</h3>
+                  <h3>Registro</h3>
+                  <div class="date-nav">
+                    <button id="btn-date-prev" class="btn btn-icon btn-text" title="Día anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                    <span id="viewing-date-label">Hoy</span>
+                    <button id="btn-date-next" class="btn btn-icon btn-text" title="Día siguiente" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                  </div>
                   <button id="btn-clear-history" class="btn btn-text text-danger" title="Borrar registro de hoy">
                     <i class="fa-solid fa-trash-can"></i> Limpiar
                   </button>
@@ -183,6 +194,12 @@
                   <h3><i class="fa-solid fa-calendar-days"></i> Mi Historial</h3>
                 </div>
                 <div id="personal-calendar" class="personal-calendar-container"></div>
+              </div>
+
+              <!-- Gráfico semanal -->
+              <div class="card card-weekly-chart">
+                <h3><i class="fa-solid fa-chart-column"></i> Últimos 7 Días</h3>
+                <div id="weekly-chart" class="weekly-chart-container"></div>
               </div>
 
             </div>
@@ -211,6 +228,15 @@
                 <div class="viewfinder-footer">
                   <span id="camera-status" class="status-label">Cámara inactiva</span>
                 </div>
+              </div>
+
+              <!-- Favoritos rápidos -->
+              <div class="favorites-panel" id="favorites-panel">
+                <button class="favorites-toggle-btn" id="btn-toggle-favorites">
+                  <i class="fa-solid fa-star"></i> Favoritos rápidos
+                  <i class="fa-solid fa-chevron-down fav-chevron" id="fav-chevron"></i>
+                </button>
+                <div id="favorites-list" class="favorites-list hidden"></div>
               </div>
 
               <!-- Contexto opcional para la IA -->
@@ -252,12 +278,23 @@
                 </button>
                 <input type="file" id="file-input" accept="image/*" class="hidden" />
               </div>
+
+              <!-- Botón de análisis explícito -->
+              <button id="btn-analyze" class="btn btn-primary btn-analyze-main hidden">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Analizar este Plato
+              </button>
             </div>
           </section>
 
           <!-- PESTAÑA 3: AMIGOS -->
           <section id="sec-friends" class="tab-panel">
             <div class="friends-container">
+
+              <!-- Ranking de Rachas -->
+              <div class="card card-ranking">
+                <h3><i class="fa-solid fa-trophy"></i> Ranking de Rachas</h3>
+                <div id="friends-ranking" class="friends-ranking"><div class="empty-state" style="padding:12px 0"><p style="font-size:0.85rem;color:var(--text-secondary)">Agregá amigos para ver el ranking.</p></div></div>
+              </div>
 
               <!-- Mi código de amigo -->
               <div class="card card-friend-code">
@@ -414,6 +451,16 @@
                 </div>
               </div>
 
+              <div class="card card-achievements">
+                <h3><i class="fa-solid fa-medal"></i> Logros y Títulos</h3>
+                <p class="settings-help">Completá objetivos para desbloquear logros y títulos graciosos para tu perfil.</p>
+                <div class="active-title-row">
+                  <span class="toggle-label">Título activo:</span>
+                  <select id="select-title" class="form-control select-title-control"><option value="">Sin título</option></select>
+                </div>
+                <div id="achievements-grid" class="achievements-grid"></div>
+              </div>
+
               <div class="card card-settings">
                 <h3><i class="fa-solid fa-circle-question"></i> Acerca de NutriScan AI</h3>
                 <div class="about-info">
@@ -527,6 +574,9 @@
           </div>
 
           <div class="modal-footer">
+            <button id="btn-save-favorite" class="btn btn-secondary hidden">
+              <i class="fa-solid fa-star"></i> Favorito
+            </button>
             <button id="btn-discard-meal" class="btn btn-secondary">
               <i class="fa-solid fa-trash"></i> Descartar
             </button>
