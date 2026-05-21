@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script type="module" crossorigin src="./assets/index-Rk7bagGs.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Dn0_BaQu.css">
+    <script type="module" crossorigin src="./assets/index-DBINvQkn.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Dlv2JwLv.css">
   </head>
   <body>
     <div id="app">
@@ -175,6 +175,14 @@
                     <p class="subtext">Ve a la pestaña de Escanear para añadir tu primer plato.</p>
                   </div>
                 </div>
+              </div>
+
+              <!-- Historial personal de calorías -->
+              <div class="card card-personal-calendar">
+                <div class="history-header">
+                  <h3><i class="fa-solid fa-calendar-days"></i> Mi Historial</h3>
+                </div>
+                <div id="personal-calendar" class="personal-calendar-container"></div>
               </div>
 
             </div>
@@ -391,6 +399,16 @@
                   </div>
                   <label class="toggle-switch">
                     <input type="checkbox" id="toggle-share-photos" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="setting-toggle-row" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-border)">
+                  <div>
+                    <p class="toggle-label">Compartir historial de calorías</p>
+                    <p class="settings-help" style="margin: 0">Tus amigos podrán ver un calendario con tus calorías de los últimos 35 días.</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="toggle-share-history" />
                     <span class="toggle-slider"></span>
                   </label>
                 </div>
