@@ -11,8 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <script type="module" crossorigin src="./assets/index-BoctXf-W.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Bgvj2ey4.css">
+    <script type="module" crossorigin src="./assets/index-Rk7bagGs.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Dn0_BaQu.css">
   </head>
   <body>
     <div id="app">
@@ -309,6 +309,46 @@
                 <button id="btn-save-settings" class="btn btn-primary">
                   <i class="fa-solid fa-floppy-disk"></i> Guardar Ajustes
                 </button>
+              </div>
+
+              <div class="card card-settings">
+                <h3><i class="fa-solid fa-calculator"></i> Calculadora de Calorías</h3>
+                <p class="settings-help">Calculá tus calorías de mantenimiento y déficit según tu cuerpo y actividad física.</p>
+                <div class="calc-grid">
+                  <div class="form-group">
+                    <label for="input-weight">Peso (kg)</label>
+                    <input type="number" id="input-weight" min="30" max="300" placeholder="70" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="input-height">Altura (cm)</label>
+                    <input type="number" id="input-height" min="100" max="250" placeholder="170" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="input-age">Edad</label>
+                    <input type="number" id="input-age" min="10" max="100" placeholder="25" class="form-control" />
+                  </div>
+                  <div class="form-group">
+                    <label for="select-gender">Sexo biológico</label>
+                    <select id="select-gender" class="form-control">
+                      <option value="male">Masculino</option>
+                      <option value="female">Femenino</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="select-activity">Nivel de actividad física</label>
+                  <select id="select-activity" class="form-control">
+                    <option value="1.2">Sedentario (poco o nada de ejercicio)</option>
+                    <option value="1.375">Levemente activo (ejercicio 1-3 días/semana)</option>
+                    <option value="1.55" selected>Moderadamente activo (3-5 días/semana)</option>
+                    <option value="1.725">Muy activo (ejercicio intenso 6-7 días/semana)</option>
+                    <option value="1.9">Extra activo (trabajo físico + ejercicio intenso)</option>
+                  </select>
+                </div>
+                <button id="btn-calc-calories" class="btn btn-secondary" style="width:100%">
+                  <i class="fa-solid fa-calculator"></i> Calcular
+                </button>
+                <div id="calc-result" class="calc-result hidden"></div>
               </div>
 
               <div class="card card-settings">
